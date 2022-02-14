@@ -1,4 +1,13 @@
-import {Button, Dimensions, Pressable, StyleSheet, Text, View, TouchableHighlight, TouchableOpacity} from 'react-native';
+import {
+  Button,
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  TouchableHighlight,
+  TouchableOpacity
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {useEffect, useState} from "react";
 
@@ -37,10 +46,10 @@ export default function App() {
   }
 
   const buttonsConfig = [
-    {type: 'dislikes', title: '👎', undoTitle: 'Undo dislike', color: 'red', role: true},
-    {type: 'pretty', title: '🤌', undoTitle: 'Undo pretty', color: 'green', role: false},
-    {type: 'smash', title: '🔥', undoTitle: 'Undo hot', color: 'orange', role: false},
-    {type: 'total', title: 'Boring button', undoTitle: 'Undo boring button', color: 'blue', role: false}
+    {type: 'dislikes', title: '👎'},
+    {type: 'smash', title: '🔥'},
+    {type: 'pretty', title: '🤌'},
+    {type: 'total', title: 'Boring button', large: true}
   ]
 
   return (
@@ -50,18 +59,15 @@ export default function App() {
       </View> :
       <View style={styles.container}>
         <View style={styles.dataWrapper}>
-          <Text style={styles.dataText}>
-            {counter.total}{"\n"}
-            Pretty: {getPercentage(counter.pretty)}% {counter.pretty}{"\n"}
-            Smash: {getPercentage(counter.smash)}% {counter.smash}{"\n"}
-            Dislikes: {getPercentage(counter.dislikes)}% {counter.dislikes}{"\n"}
-          </Text>
-          <Text style={styles.totalCounter}>{counter.total}</Text>
+          <TouchableOpacity onPress={() => handleUpdate('total',true)}>
+            <Text style={styles.totalCounter}>{counter.total}</Text>
+          </TouchableOpacity>
           <View style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            width: screenWidth * 0.68
+            width: screenWidth * 0.68,
+            marginTop: 20
           }}>
             {['dislikes', 'smash', 'pretty'].map(type => (
                 <TouchableOpacity
@@ -70,15 +76,17 @@ export default function App() {
                     onPress={() => handleUpdate(type,true)}>
                   <View style={{flexDirection: "row", alignItems: 'flex-end'}}>
                     <Text style={[styles.dataCounter,
-                      {fontSize: type === 'smash' ? 50 : 32, color: type === 'dislikes' ? 'coral' : '#fff'}
+                      {fontSize: type === 'smash' ? 50 : 32, color: type === 'dislikes' ? '#EF5350' : '#fff'}
                     ]}>
                       {getPercentage(counter[type])}
                     </Text>
                     <Text style={[styles.percentSymbol,
-                      {lineHeight: type === 'smash' ? 38 : 32, color: type === 'dislikes' ? 'coral' : '#fff'}
+                      {lineHeight: type === 'smash' ? 38 : 32, color: type === 'dislikes' ? '#EF5350' : '#fff'}
                     ]}>%</Text>
                   </View>
-                  <Text style={[styles.dataQuantity, {color: type === 'dislikes' ? 'coral' : '#fff'}]}>{counter[type]}</Text>
+                  <Text style={[styles.dataQuantity, {color: type === 'dislikes' ? '#EF5350' : '#fff'}]}>
+                    {counter[type]}
+                  </Text>
                 </TouchableOpacity>
             ))}
           </View>
@@ -91,7 +99,7 @@ export default function App() {
                 onPress={() => handleUpdate(button.type)}
                 style={[
                     styles.mainButton,
-                    {width: button.type === 'total' ? screenWidth * 0.68 : screenWidth * 0.2}
+                    {width: button.large ? screenWidth * 0.68 : screenWidth * 0.2}
                 ]}
                 color={button.color}>
                 <Text style={styles.buttonText}>{button.title}</Text>
@@ -113,7 +121,8 @@ const styles = StyleSheet.create({
   },
 
   dataWrapper: {
-    marginTop: screenWidth * 0.3
+    marginTop: screenWidth * 0.3,
+    alignItems: 'center'
   },
 
   dataText: {
@@ -141,7 +150,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 32,
     color: '#fff',
-    fontWeight: '700'
+    fontWeight: '700',
+    position: 'absolute',
+    right: -20
   },
 
   mainButton: {
